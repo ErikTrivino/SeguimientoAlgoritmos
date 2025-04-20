@@ -124,6 +124,17 @@ def medir_tiempo(func, arr):
     end = time.time()
     return end - start
 
+def guardar_arreglo_en_archivo(arr, nombre_archivo):
+    with open(nombre_archivo, 'w') as f:
+        for num in arr:
+            f.write(f"{num}\n")
+
+def cargar_arreglo_desde_archivo(nombre_archivo):
+    with open(nombre_archivo, 'r') as f:
+        return [int(line.strip()) for line in f.readlines()]
+
+
+
 def main_ordenamiento():
     tamanos = [10_000, 100_000, 1_000_000]
     metodos = [
@@ -138,7 +149,15 @@ def main_ordenamiento():
     resultados = {nombre: [] for nombre, _, _ in metodos}
     
     for tam in tamanos:
-        arr = generar_arreglo(tam)
+        nombre_archivo = f"arreglo_{tam}.txt"
+
+        # Solo generar y guardar si no existe el archivo
+        try:
+            arr = cargar_arreglo_desde_archivo(nombre_archivo)
+        except FileNotFoundError:
+            arr = generar_arreglo(tam)
+            guardar_arreglo_en_archivo(arr, nombre_archivo)
+
         for nombre, func, _ in metodos:
             tiempo = medir_tiempo(func, arr)
             resultados[nombre].append(tiempo)
